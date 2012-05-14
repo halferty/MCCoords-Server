@@ -1,7 +1,6 @@
 package com.ehalferty.mccoords;
 
 import java.io.BufferedReader;
-import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -32,29 +31,36 @@ public class ServerThread extends Thread {
 		try {
 			while(true) {
 				String message = din.readLine();
+				System.out.println("___" + message + "___");
 				// Format: "|<password>|<name>|<x>|<y>|<z>"
-				
-				String splitMessage[] = message.split("\\|");
-				if (splitMessage.length == 6) {
-					String pass = splitMessage[1];
-					if (pass.equals(password)) {
-						String name = splitMessage[2];
-						int x = Integer.parseInt(splitMessage[3]);
-						int y = Integer.parseInt(splitMessage[4]);
-						int z = Integer.parseInt(splitMessage[5]);
-						CoordsServer.update(name, x, y, z);
-						
-						// Response: "<name>|<x>|<y>|<z>,<name>|<x>|<y>|<z>,etc."
-						String reply = "";
-						for (Player p: CoordsServer.players.values()) {
-							if (!p.outdated()) {
-								reply += p;
+				if (message != null) {
+					if (message.length() > 10) {
+						String splitMessage[] = message.split("\\|");
+						if (splitMessage.length == 6) {
+							String pass = splitMessage[1];
+							if (pass.equals(password)) {
+								String name = splitMessage[2];
+								int x = (int)Double.parseDouble(splitMessage[3]);
+								int y = (int)Double.parseDouble(splitMessage[4]);
+								int z = (int)Double.parseDouble(splitMessage[5]);
+								CoordsServer.update(name, x, y, z);
+								
+								// Response: "<name>|<x>|<y>|<z>,<name>|<x>|<y>|<z>,etc."
+								String reply = "";
+								for (Player p: CoordsServer.players.values()) {
+									if (!p.outdated()) {
+										reply += p;
+									}
+								}
+								dout.print(reply);
+								dout.flush();
 							}
 						}
-						dout.print(reply);
-						dout.flush();
 					}
 				}
+				din.close();
+				dout.close();
+				return;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
