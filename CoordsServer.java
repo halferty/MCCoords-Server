@@ -39,7 +39,7 @@ public class CoordsServer {
 		}
 	}
 	
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		int port;
 		String password;
 		
@@ -52,7 +52,12 @@ public class CoordsServer {
 		}
 		
 		System.out.println("Running on port " + port + " with password " + password);
-		new CoordsServer(port, password);
+		try {
+			new CoordsServer(port, password);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public static void update(String name, int x, int y, int z, String addr) {
