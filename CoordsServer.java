@@ -1,6 +1,11 @@
 package com.ehalferty.mccoords;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -9,8 +14,11 @@ import java.util.Hashtable;
 public class CoordsServer {
 
 	// Constants
-	public static final int PORT = 1338;
-	public static final String PASSWORD = "PA55W0RD";
+	private static final String CONFIG_FILENAME = "mccoordsserver.cfg";
+	
+	// Defaults
+	private static final int DEFAULT_PORT = 1338;
+	private static final String DEFAULT_PASSWORD = "PA55W0RD";
 	
 	private ServerSocket ss;
 	protected static Hashtable<String, Player> players = new Hashtable<String, Player>();
@@ -32,12 +40,23 @@ public class CoordsServer {
 	}
 	
 	public static void main(String[] args) throws Exception {
-		System.out.println("Running on port " + PORT + " with password " + PASSWORD);
-		new CoordsServer(PORT, PASSWORD);
+		int port;
+		String password;
+		
+		if (args.length == 2) {
+			port = Integer.parseInt(args[0]);
+			password = args[1];
+		} else {
+			port = DEFAULT_PORT;
+			password = DEFAULT_PASSWORD;
+		}
+		
+		System.out.println("Running on port " + port + " with password " + password);
+		new CoordsServer(port, password);
 	}
 
-	public static void update(String name, int x, int y, int z) {
+	public static void update(String name, int x, int y, int z, String addr) {
 		System.out.println("Adding coords for player " + name);
-		players.put(name, new Player(name, x, y, z));
+		players.put(name, new Player(name, addr, x, y, z));
 	}
 }
